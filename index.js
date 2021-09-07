@@ -41,9 +41,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var fastify_1 = __importDefault(require("fastify"));
 var server = (0, fastify_1.default)();
-server.get('/ping', function (request, reply) { return __awaiter(void 0, void 0, void 0, function () {
+server.get('/auth', {
+    preValidation: function (request, reply, done) {
+        var trashItem = request.query.trashItem;
+        done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate 'poop'
+    }
+}, function (request, reply) { return __awaiter(void 0, void 0, void 0, function () {
+    var trashItem;
     return __generator(this, function (_a) {
-        return [2 /*return*/, 'pong\n'];
+        trashItem = request.query.trashItem;
+        return [2 /*return*/, "You don't have to throw out " + trashItem + " to the mixed bin"];
     });
 }); });
 server.listen(8080, function (err, address) {
