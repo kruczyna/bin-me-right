@@ -40,19 +40,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var fastify_1 = __importDefault(require("fastify"));
+var typebox_1 = require("@sinclair/typebox");
 var server = (0, fastify_1.default)();
-server.get('/auth', {
+var Item = typebox_1.Type.Object({
+    name: typebox_1.Type.String(),
+    category: typebox_1.Type.Optional(typebox_1.Type.String()),
+});
+server.get('/item', {
     preValidation: function (request, reply, done) {
         var trashItem = request.query.trashItem;
-        done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate 'poop'
+        done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate
     }
 }, function (request, reply) { return __awaiter(void 0, void 0, void 0, function () {
     var trashItem;
     return __generator(this, function (_a) {
         trashItem = request.query.trashItem;
-        return [2 /*return*/, "You don't have to throw out " + trashItem + " to the mixed bin"];
+        return [2 /*return*/, "You have to throw out " + trashItem + " to the mixed bin"];
     });
 }); });
+server.post("/item", {
+    schema: {
+        body: Item,
+        response: {
+            200: Item,
+        },
+    },
+}, function (req, rep) {
+    var user = req.body;
+    var trashItem = req.query.trashItem;
+    rep.status(200).send(user);
+});
 server.listen(8080, function (err, address) {
     if (err) {
         console.error(err);

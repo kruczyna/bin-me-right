@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/kruczyna/bin-me-right#readme",
   "dependencies": {
+    "@sinclair/typebox": "^0.20.5",
     "fastify": "^3.21.0"
   },
   "devDependencies": {
