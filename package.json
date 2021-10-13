@@ -2,10 +2,12 @@
   "name": "bin-me-right",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node index.js"
+    "start": "node dist/index.js",
+    "start2": "node --inspect=5858 -r ts-node/register ./src/server.ts",
+    "script": "cd src/scripts && ts-node"
   },
   "repository": {
     "type": "git",
@@ -19,11 +21,16 @@
   },
   "homepage": "https://github.com/kruczyna/bin-me-right#readme",
   "dependencies": {
-    "@sinclair/typebox": "^0.20.5",
-    "fastify": "^3.21.0"
+    "dotenv": "^10.0.0",
+    "fastify": "^3.21.0",
+    "mongoose": "^5.13.8",
+    "node": "^16.10.0"
   },
   "devDependencies": {
-    "@types/node": "^16.7.13",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^16.10.3",
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.3.0",
     "typescript": "^4.4.2"
   }
 }

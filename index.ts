@@ -1,7 +1,5 @@
-import fastify from 'fastify'
-import { Static, Type } from '@sinclair/typebox'
-
-const server = fastify();
+import { Static, Type } from '@sinclair/typebox';
+import { server } from './src/server';
 
 const Item = Type.Object({
   name: Type.String(),
@@ -21,13 +19,13 @@ server.get<{
     done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate
   }
 }
-, async (request, reply) => {
-  const { trashItem } = request.query;
+  , async (request, reply) => {
+    const { trashItem } = request.query;
 
-  return `You have to throw out ${trashItem} to the mixed bin`;
-})
+    return `You have to throw out ${trashItem} to the mixed bin`;
+  });
 
-server.post<{ Body: ItemType; Reply: ItemType }>(
+server.post<{ Body: ItemType; Reply: ItemType; }>(
   "/item",
   {
     schema: {
@@ -42,11 +40,3 @@ server.post<{ Body: ItemType; Reply: ItemType }>(
     reply.status(200).send(user);
   }
 );
-
-server.listen(8080, (err, address) => {
-  if (err) {
-    console.error(err)
-    process.exit(1)
-  }
-  console.log(`Server listening at ${address}`)
-});
