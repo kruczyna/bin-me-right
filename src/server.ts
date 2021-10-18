@@ -2,7 +2,7 @@ import fastify, { FastifyInstance, FastifySchema } from "fastify";
 import { connect, disconnect } from './database/database';
 import { Static, Type } from '@sinclair/typebox';
 import { TrashItemModel } from "./database/trashItem/trashItem.model";
-
+import rateLimit from 'fastify-rate-limit';
 
 const port = 3322;
 
@@ -18,6 +18,18 @@ server.listen(port, (err, address) => {
     process.exit(1);
   }
   console.log(`Server started at ${address}`);
+});
+
+server.register(rateLimit, {
+  max: 3,
+  timeWindow: '5 minutes',
+  errorResponseBuilder: function (req, context) {
+    return {
+      code: 429,
+      error: 'Too Many Requests',
+      message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
+    };
+  }
 });
 
 const Item = Type.Object({
@@ -69,7 +81,9 @@ server.get<{
 
 server.post<{ Body: ItemType; Reply: ItemType; }>(
   "/item",
-  { schema },
+  {
+    schema,
+  },
   async (request, reply) => {
     connect();
     const { body } = request;
