@@ -8,6 +8,17 @@ const port = 3322;
 
 export const server: FastifyInstance = fastify({
   logger: true,
+}).register(rateLimit, {
+  global: false,
+  max: 3,
+  timeWindow: '5 minutes',
+  errorResponseBuilder: function (req, context) {
+    return {
+      code: 429,
+      error: 'Too Many Requests',
+      message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
+    };
+  }
 });
 
 connect();
@@ -18,18 +29,6 @@ server.listen(port, (err, address) => {
     process.exit(1);
   }
   console.log(`Server started at ${address}`);
-});
-
-server.register(rateLimit, {
-  max: 3,
-  timeWindow: '5 minutes',
-  errorResponseBuilder: function (req, context) {
-    return {
-      code: 429,
-      error: 'Too Many Requests',
-      message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
-    };
-  }
 });
 
 const Item = Type.Object({
