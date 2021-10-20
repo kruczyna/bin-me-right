@@ -1,37 +1,32 @@
-import fastify, { FastifyInstance, FastifySchema } from "fastify";
-import { connect, disconnect } from './database/database';
+import fastify, { FastifyInstance } from 'fastify';
 import { Static, Type } from '@sinclair/typebox';
-import { TrashItemModel } from "./database/trashItem/trashItem.model";
 import rateLimit from 'fastify-rate-limit';
 import * as bearerAuthPlugin from 'fastify-bearer-auth';
+import { postItemRoute } from './routes/postItem';
+import { getItemRoute } from './routes/getItem';
+import { deleteItemRoute } from './routes/deleteItem';
 
-const port = 3322;
 const superKeys = new Set(['a-super-secret-key', 'another-super-secret-key']);
 
 export const server: FastifyInstance = fastify({
   logger: true,
-}).register(rateLimit, {
-  global: false,
-  max: 3,
-  timeWindow: '5 minutes',
-  errorResponseBuilder: function (req, context) {
-    return {
-      code: 429,
-      error: 'Too Many Requests',
-      message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
-    };
-  }
-}).register(bearerAuthPlugin, { keys: superKeys, bearerType: 'Bearer' });
-
-connect();
-
-server.listen(port, (err, address) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  console.log(`Server started at ${address}`);
-});
+})
+  .register(postItemRoute, { prefix: '/item' })
+  .register(getItemRoute, { prefix: '/item' })
+  .register(deleteItemRoute, { prefix: '/item' })
+  .register(rateLimit, {
+    global: false,
+    max: 3,
+    timeWindow: '5 minutes',
+    errorResponseBuilder: function (req, context) {
+      return {
+        code: 429,
+        error: 'Too Many Requests',
+        message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
+      };
+    }
+  })
+  .register(bearerAuthPlugin, { keys: superKeys, bearerType: 'Bearer' });
 
 const Item = Type.Object({
   name: Type.String(),
@@ -39,7 +34,7 @@ const Item = Type.Object({
   isBreakable: Type.Boolean(),
 });
 
-type ItemType = Static<typeof Item>;
+export type ItemType = Static<typeof Item>;
 
 export interface IQuerystring {
   trashItem: string;
@@ -47,81 +42,16 @@ export interface IQuerystring {
 
 const bodyJsonSchema = {
   type: 'object',
-  required: ['name'],
+  required: ['name', 'binAssignment'],
   properties: {
     name: { type: 'string' },
-    binAssignment: { type: 'number' },
+    binAssignment: { type: 'string' },
     isBreakable: {
       type: 'boolean',
     }
   }
 };
 
-const schema = {
+export const schema = {
   body: bodyJsonSchema,
 };
-
-server.get<{
-  Querystring: IQuerystring,
-}>('/item', {
-  preValidation: (request, reply, done) => {
-    const { trashItem } = request.query;
-    done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate
-  },
-}
-  , async (request, reply) => {
-    connect();
-    const { trashItem } = request.query;
-    const record = await TrashItemModel.findOne({ name: trashItem });
-    if (record) {
-      return `The item ${record.name} is already in the DB`;
-    } else {
-      return `You have to throw out ${trashItem} to the mixed bin`;
-    };
-  });
-
-server.post<{ Body: ItemType; Reply: ItemType; }>(
-  "/item",
-  {
-    schema,
-  },
-  async (request, reply) => {
-    connect();
-    const { body } = request;
-    const { name, binAssignment, isBreakable } = body;
-
-    let trashItem = { name, binAssignment, isBreakable };
-
-    try {
-      await TrashItemModel.create(trashItem);
-      console.log(`Created item ${trashItem.name}`);
-      disconnect();
-    } catch (e) {
-      console.error(`We have an error: ${e}`);
-      disconnect();
-    }
-    reply.status(204);
-    disconnect();
-  });
-
-server.delete<{
-  Querystring: IQuerystring,
-}>('/item', {
-  preValidation: (request, reply, done) => {
-    const { trashItem } = request.query;
-    done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined);
-  }
-}
-  , async (request, reply) => {
-    connect();
-
-    const { trashItem } = request.query;
-
-    try {
-      const record = await TrashItemModel.deleteOne({ name: trashItem });
-      reply.status(200).send(`You have deleted a/an ${trashItem}`);
-    } catch (e) {
-      console.error(`We have an error: ${e}`);
-      disconnect();
-    }
-  });

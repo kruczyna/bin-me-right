@@ -5,7 +5,7 @@ let database: Mongoose.Connection;
 
 const mongo_uri = process.env['MONGO_URI'];
 
-export const connect = () => {
+export const connectWithDatabase = () => {
   // add your own uri below
   const uri = mongo_uri;
 
