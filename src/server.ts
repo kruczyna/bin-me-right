@@ -3,8 +3,10 @@ import { connect, disconnect } from './database/database';
 import { Static, Type } from '@sinclair/typebox';
 import { TrashItemModel } from "./database/trashItem/trashItem.model";
 import rateLimit from 'fastify-rate-limit';
+import * as bearerAuthPlugin from 'fastify-bearer-auth';
 
 const port = 3322;
+const superKeys = new Set(['a-super-secret-key', 'another-super-secret-key']);
 
 export const server: FastifyInstance = fastify({
   logger: true,
@@ -19,7 +21,7 @@ export const server: FastifyInstance = fastify({
       message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
     };
   }
-});
+}).register(bearerAuthPlugin, { keys: superKeys, bearerType: 'Bearer' });
 
 connect();
 
@@ -39,7 +41,7 @@ const Item = Type.Object({
 
 type ItemType = Static<typeof Item>;
 
-interface IQuerystring {
+export interface IQuerystring {
   trashItem: string;
 }
 
@@ -65,7 +67,7 @@ server.get<{
   preValidation: (request, reply, done) => {
     const { trashItem } = request.query;
     done(trashItem === 'poop' ? new Error('That is a bad word!') : undefined); // do not validate
-  }
+  },
 }
   , async (request, reply) => {
     connect();
