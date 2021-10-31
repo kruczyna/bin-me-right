@@ -17,13 +17,20 @@ export const postItemRoute: FastifyPluginCallback = async (fastify, options, don
       let trashItem = { name, binAssignment, isBreakable };
 
       try {
-        await TrashItemModel.create(trashItem);
-        console.log(`Created item ${trashItem.name}`);
-      } catch (e) {
-        console.error(`We have an error: ${e}`);
+        const record = await TrashItemModel.findOne({ name: body.name });
+
+        if (!record) {
+          await TrashItemModel.create(trashItem);
+          //@ts-expect-error
+          reply.status(200).send(`Created item an item with a name property of ${trashItem.name}`);
+        } else {
+          //@ts-expect-error
+          reply.status(400).send(`Item ${body.name} already exists in the DB!`);
+        }
+      } catch (error) {
+        console.error(`We got an error while creating a new entry!: ${error}`);
         disconnect();
       }
-      reply.status(204);
 
       done();
     });
