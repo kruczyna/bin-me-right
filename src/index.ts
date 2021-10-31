@@ -1,7 +1,6 @@
 import { connectWithDatabase } from './database/database';
 import { server } from './server';
 
-
 const port = 3322;
 
 const start = async () => {

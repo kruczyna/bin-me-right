@@ -5,8 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start2": "ts-node-dev --poll server/src/index.ts",
-    "start": "node --inspect=5858 -r ts-node/register ./src/server.ts",
+    "start": "ts-node-dev --poll src/index.ts",
     "script": "cd src/scripts && ts-node"
   },
   "repository": {

@@ -1,8 +1,4 @@
 import { Schema } from "mongoose";
-import { findOneOrCreate } from "./trashItem.statics";
-import { setLastUpdated, sameName } from "./trashItem.methods";
-import { server } from "../../server";
-
 
 const trashItemSchema = new Schema({
   name: { type: String, required: true },
@@ -17,9 +13,5 @@ const trashItemSchema = new Schema({
     default: new Date()
   }
 });
-
-trashItemSchema.statics.findOneOrCreate = findOneOrCreate;
-trashItemSchema.methods.setLastUpdated = setLastUpdated;
-trashItemSchema.methods.sameLastName = sameName;
 
 export default trashItemSchema;

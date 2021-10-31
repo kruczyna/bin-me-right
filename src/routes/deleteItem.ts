@@ -3,7 +3,6 @@ import { connectWithDatabase, disconnect } from "../database/database";
 import { TrashItemModel } from "../database/trashItem/trashItem.model";
 import { IQuerystring } from "../server";
 
-
 export const deleteItemRoute: FastifyPluginCallback = async (fastify, options, done) => {
   fastify.delete<{
     Querystring: IQuerystring,
@@ -15,14 +14,19 @@ export const deleteItemRoute: FastifyPluginCallback = async (fastify, options, d
   }
     , async (request, reply) => {
       connectWithDatabase();
-
       const { trashItem } = request.query;
 
       try {
-        const record = await TrashItemModel.deleteOne({ name: trashItem });
-        reply.status(200).send(`You have deleted a/an ${trashItem}`);
-      } catch (e) {
-        console.error(`We have an error: ${e}`);
+        const record = await TrashItemModel.findOne({ name: trashItem });
+
+        if (!record) {
+          reply.status(404).send(`There is no ${trashItem} item in the database`);
+        }
+
+        await TrashItemModel.deleteOne({ name: trashItem });
+        reply.status(200).send(`You have deleted the ${trashItem} item from the database`);
+      } catch (error) {
+        console.error(`We have an error: ${error}`);
         disconnect();
       }
     });

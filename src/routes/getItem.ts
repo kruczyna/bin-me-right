@@ -15,11 +15,17 @@ export const getItemRoute: FastifyPluginCallback = async (fastify, options, done
     , async (request, reply) => {
       connectWithDatabase();
       const { trashItem } = request.query;
-      const record = await TrashItemModel.findOne({ name: trashItem });
-      if (record) {
-        return `The item ${record.name} is already in the DB`;
-      } else {
-        return `You have to throw out ${trashItem} to the mixed bin`;
-      };
+
+      try {
+        const record = await TrashItemModel.findOne({ name: trashItem });
+
+        if (!record || undefined) {
+          reply.status(404).send(`The item ${trashItem} does not exist in the DB`);
+        }
+
+        reply.status(204).send(`You have to throw out ${trashItem} to the ${record.binAssignment} bin`);
+      } catch (error) {
+        console.error(`We have an error: ${error}`);
+      }
     });
 };
