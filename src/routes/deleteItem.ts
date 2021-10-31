@@ -26,7 +26,7 @@ export const deleteItemRoute: FastifyPluginCallback = async (fastify, options, d
         await TrashItemModel.deleteOne({ name: trashItem });
         reply.status(200).send(`You have deleted the ${trashItem} item from the database`);
       } catch (error) {
-        console.error(`We have an error: ${error}`);
+        console.error(`We got an error when attempting to delete the record from DB!: ${error}`);
         disconnect();
       }
     });

@@ -42,7 +42,7 @@ export interface IQuerystring {
 
 const bodyJsonSchema = {
   type: 'object',
-  required: ['name', 'binAssignment'],
+  required: ['name', 'binAssignment', 'isBreakable'],
   properties: {
     name: { type: 'string' },
     binAssignment: { type: 'string' },
