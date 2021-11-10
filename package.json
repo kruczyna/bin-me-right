@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "ts-node-dev --poll src/index.ts",
-    "script": "cd src/scripts && ts-node"
+    "script": "cd src/scripts && ts-node",
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
@@ -29,13 +30,15 @@
     "node": "^16.10.0"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.2",
     "@types/mongoose": "^5.7.29",
     "@types/node": "^16.10.3",
+    "jest": "^27.3.1",
     "nodemon": "^2.0.13",
     "pino-pretty": "^7.2.0",
-    "tap": "^15.0.10",
+    "ts-jest": "^27.0.7",
     "ts-node": "^10.3.0",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.4"
   }
 }

@@ -1,6 +1,6 @@
 import { FastifyPluginCallback } from "fastify";
 import { ItemType, schema } from "../server";
-import { connectWithDatabase, disconnect } from '../database/database';
+import { connectWithDatabase, disconnectDatabase } from '../database/database';
 import { TrashItemModel } from "../database/trashItem/trashItem.model";
 
 export const postItemRoute: FastifyPluginCallback = async (fastify, options, done) => {
@@ -29,7 +29,7 @@ export const postItemRoute: FastifyPluginCallback = async (fastify, options, don
         }
       } catch (error) {
         console.error(`We got an error while creating a new entry!: ${error}`);
-        disconnect();
+        disconnectDatabase();
       }
 
       done();

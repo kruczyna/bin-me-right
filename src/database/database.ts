@@ -35,7 +35,7 @@ export const connectWithDatabase = () => {
   };
 };
 
-export const disconnect = () => {
+export const disconnectDatabase = () => {
   if (!database) {
     return;
   }

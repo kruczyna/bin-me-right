@@ -3,7 +3,7 @@ import { server } from './server';
 
 const port = 3322;
 
-const start = async () => {
+export const start = async () => {
   try {
     connectWithDatabase();
   } catch (error) {
@@ -20,3 +20,7 @@ const start = async () => {
 };
 
 start();
+
+export const stopServer = async () => {
+  server.close();
+};

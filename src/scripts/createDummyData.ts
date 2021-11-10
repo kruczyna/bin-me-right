@@ -1,7 +1,7 @@
 import { TrashItemModel } from "../database/trashItem/trashItem.model";
-import { connect, disconnect } from "../database/database";
+import { connectWithDatabase, disconnectDatabase } from "../database/database";
 (async () => {
-  connect();
+  connectWithDatabase();
   const trashItems = [
     { name: "Apple", binAssignment: "Bio", isBreakable: false },
     { name: "Pineapple", binAssignment: "Bio", isBreakable: false },
@@ -19,7 +19,7 @@ import { connect, disconnect } from "../database/database";
       await TrashItemModel.create(trashItem);
       console.log(`Created item ${trashItem.name}`);
     }
-    disconnect();
+    disconnectDatabase();
   } catch (e) {
     console.error(e);
   }

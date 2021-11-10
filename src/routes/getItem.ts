@@ -1,5 +1,5 @@
 import { FastifyPluginCallback } from "fastify";
-import { connectWithDatabase, disconnect } from "../database/database";
+import { connectWithDatabase, disconnectDatabase } from "../database/database";
 import { TrashItemModel } from "../database/trashItem/trashItem.model";
 import { IQuerystring } from "../server";
 
@@ -26,7 +26,7 @@ export const getItemRoute: FastifyPluginCallback = async (fastify, options, done
         reply.status(200).send(`You have to throw out ${trashItem} to the ${record.binAssignment} bin`);
       } catch (error) {
         console.error(`We got an error when fetching the item from the DB: ${error}`);
-        disconnect();
+        disconnectDatabase();
       }
       done();
     });

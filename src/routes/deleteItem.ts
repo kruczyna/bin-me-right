@@ -1,5 +1,5 @@
 import { FastifyPluginCallback } from "fastify";
-import { connectWithDatabase, disconnect } from "../database/database";
+import { connectWithDatabase, disconnectDatabase } from "../database/database";
 import { TrashItemModel } from "../database/trashItem/trashItem.model";
 import { IQuerystring } from "../server";
 
@@ -27,7 +27,7 @@ export const deleteItemRoute: FastifyPluginCallback = async (fastify, options, d
         reply.status(200).send(`You have deleted the ${trashItem} item from the database`);
       } catch (error) {
         console.error(`We got an error when attempting to delete the record from DB!: ${error}`);
-        disconnect();
+        disconnectDatabase();
       }
     });
 };
