@@ -1,12 +1,12 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { Static, Type } from '@sinclair/typebox';
 import rateLimit from 'fastify-rate-limit';
-import * as bearerAuthPlugin from 'fastify-bearer-auth';
+// import * as bearerAuthPlugin from 'fastify-bearer-auth';
 import { postItemRoute } from './routes/postItem';
 import { getItemRoute } from './routes/getItem';
 import { deleteItemRoute } from './routes/deleteItem';
 
-const superKeys = new Set(['a-super-secret-key', 'another-super-secret-key']);
+// const superKeys = new Set(['Bearer 123456', 'a-super-secret-key', 'another-super-secret-key']);
 
 export const server: FastifyInstance = fastify({
   logger: true,
@@ -25,8 +25,8 @@ export const server: FastifyInstance = fastify({
         message: `I only allow ${context.max} requests per ${context.after} to this API. Try again soon.`,
       };
     }
-  })
-  .register(bearerAuthPlugin, { keys: superKeys, bearerType: 'Bearer' });
+  });
+// .register(bearerAuthPlugin, { keys: superKeys, bearerType: 'Bearer' });
 
 const Item = Type.Object({
   name: Type.String(),
